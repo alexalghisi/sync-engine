@@ -83,9 +83,12 @@ describe("two clients on two server processes", () => {
             return issue;
         };
         updateIssue(offline, local(i0), { title: "Offline title" });
-        updateIssue(offline, local(i1), { priority: 4 });
+        // Pick values that differ from the seed, since an update that changes nothing is never sent.
+        const priority = local(i1).priority === 1 ? 2 : 1;
+        const status = local(i1).status === "in_progress" ? "done" : "in_progress";
+        updateIssue(offline, local(i1), { priority });
         archiveIssue(offline, local(i2));
-        updateIssue(offline, local(i3), { status: "todo" });
+        updateIssue(offline, local(i3), { status: local(i3).status === "todo" ? "backlog" : "todo" });
         const created = createIssue(offline, { teamId, title: "Created offline", sortOrder: -1 });
         expect(offline.status).toBe("offline");
         expect(offline.store.pendingCount).toBe(5);
@@ -96,7 +99,7 @@ describe("two clients on two server processes", () => {
             return issue;
         };
         updateIssue(online, remote(i0), { title: "Online title" });
-        updateIssue(online, remote(i1), { status: "in_progress" });
+        updateIssue(online, remote(i1), { status });
         deleteIssue(online, remote(i3));
         await online.settled();
 
@@ -110,7 +113,7 @@ describe("two clients on two server processes", () => {
         // Same field: the offline write reached the server last, so it wins.
         expect(byId.get(i0 ?? "")?.title).toBe("Offline title");
         // Different fields of the same issue: both survive.
-        expect(byId.get(i1 ?? "")).toMatchObject({ priority: 4, status: "in_progress" });
+        expect(byId.get(i1 ?? "")).toMatchObject({ priority, status });
         expect(byId.get(i2 ?? "")?.archivedAt).not.toBeNull();
         expect(byId.has(i3 ?? "")).toBe(false);
         expect(byId.get(created?.id ?? "")?.title).toBe("Created offline");

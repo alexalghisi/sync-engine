@@ -10,7 +10,7 @@ import type { BootstrapPayload } from "../shared/protocol";
 import { App } from "./App";
 import "./styles.css";
 
-const workspaceId = import.meta.env.VITE_WORKSPACE_ID ?? DEMO_WORKSPACE_ID;
+const workspaceId = new URLSearchParams(location.search).get("workspace") ?? import.meta.env.VITE_WORKSPACE_ID ?? DEMO_WORKSPACE_ID;
 
 /**
  * Each tab is its own client with its own local database, so two tabs behave like two
@@ -38,7 +38,7 @@ async function openStorage(clientId: string): Promise<SyncStorage> {
 }
 
 async function fetchBootstrap(): Promise<BootstrapPayload> {
-    const res = await fetch(`/bootstrap?workspaceId=${workspaceId}`);
+    const res = await fetch(`/bootstrap?workspaceId=${encodeURIComponent(workspaceId)}`);
     if (!res.ok) throw new Error(`bootstrap failed: ${res.status}`);
     return (await res.json()) as BootstrapPayload;
 }

@@ -92,7 +92,9 @@ export class SyncClient {
         } else {
             const payload = await this.options.bootstrap();
             this.store.reset(payload, stored.transactions);
-            await this.persist(() => this.options.storage.replaceSnapshot(payload));
+            // Queued, not awaited: the UI can render while a large snapshot is written, and
+            // the queue still guarantees it lands before any delta that follows it.
+            void this.persist(() => this.options.storage.replaceSnapshot(payload));
         }
         if (this.options.autoConnect ?? true) this.goOnline();
     }

@@ -1,0 +1,66 @@
+{
+  "sync": {
+    "machine": "Intel(R) Xeon(R) Processor @ 2.10GHz x2",
+    "issues": 10000,
+    "bootstrap": {
+      "fetchMedianMs": 131.8,
+      "hydrateMedianMs": 290.1,
+      "payloadKb": 3707
+    },
+    "writes": {
+      "sequentialTxPerSec": 255,
+      "concurrent16TxPerSec": 241
+    },
+    "fanOut": {
+      "samples": 200,
+      "p50Ms": 7.6,
+      "p95Ms": 14.9,
+      "p99Ms": 18.8
+    },
+    "catchUp": [
+      {
+        "missedActions": 100,
+        "medianMs": 5.3,
+        "actionsPerSec": 18868
+      },
+      {
+        "missedActions": 1000,
+        "medianMs": 28.8,
+        "actionsPerSec": 34722
+      },
+      {
+        "missedActions": 10000,
+        "medianMs": 209.5,
+        "actionsPerSec": 47733
+      }
+    ],
+    "measuredAt": "2026-10-05"
+  },
+  "web": {
+    "issues": 10000,
+    "viewport": "1440x900",
+    "coldLoadMs": 616,
+    "warmLoadMs": 439,
+    "dom": {
+      "top": {
+        "rows": 33,
+        "nodes": 379
+      },
+      "middle": {
+        "rows": 41,
+        "nodes": 464
+      },
+      "bottom": {
+        "rows": 32,
+        "nodes": 370
+      }
+    },
+    "scroll": {
+      "frames": 199,
+      "p50Ms": 16.7,
+      "p95Ms": 16.8,
+      "maxMs": 50
+    },
+    "measuredAt": "2026-10-05"
+  }
+}
