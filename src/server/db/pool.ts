@@ -19,6 +19,8 @@ const types = {
 
 export type Db = pg.Pool;
 export type DbClient = pg.PoolClient;
+/** Either the pool or a client checked out for a transaction. */
+export type Queryable = pg.Pool | pg.PoolClient;
 
 export function createPool(connectionString: string, max = 10): Db {
     return new pg.Pool({ connectionString, max, types });

@@ -47,7 +47,7 @@ export interface BootstrapPayload {
     records: ModelRecord[];
 }
 
-export type RejectionCode = "invalid" | "not_found" | "conflict" | "internal";
+export type RejectionCode = "invalid" | "not_found" | "conflict";
 
 export type ClientMessage =
     | { type: "hello"; workspaceId: string; clientId: string; lastSyncId: number }
