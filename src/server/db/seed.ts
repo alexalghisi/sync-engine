@@ -37,10 +37,15 @@ const SUBJECTS = [
     "presence indicators",
 ];
 
+const CONTEXTS = ["", " on mobile", " in large workspaces", " after reconnect", " for guests", " in the command menu", " on Safari", ""];
+
+/** Deterministic but non-periodic, so neighbouring rows in the demo don't repeat. */
 export function issueTitle(n: number): string {
-    const verb = VERBS[n % VERBS.length] ?? "Fix";
-    const subject = SUBJECTS[(n * 7 + Math.floor(n / VERBS.length)) % SUBJECTS.length] ?? "it";
-    return `${verb} ${subject}`;
+    const h = Math.imul(n + 1, 2_654_435_761) >>> 0;
+    const verb = VERBS[h % VERBS.length] ?? "Fix";
+    const subject = SUBJECTS[(h >>> 8) % SUBJECTS.length] ?? "it";
+    const context = CONTEXTS[(h >>> 16) % CONTEXTS.length] ?? "";
+    return `${verb} ${subject}${context}`;
 }
 
 /**
