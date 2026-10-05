@@ -39,7 +39,7 @@ const SUBJECTS = [
 
 export function issueTitle(n: number): string {
     const verb = VERBS[n % VERBS.length] ?? "Fix";
-    const subject = SUBJECTS[Math.floor(n / VERBS.length) % SUBJECTS.length] ?? "it";
+    const subject = SUBJECTS[(n * 7 + Math.floor(n / VERBS.length)) % SUBJECTS.length] ?? "it";
     return `${verb} ${subject}`;
 }
 
@@ -76,7 +76,7 @@ export async function seedWorkspace(db: Db, options: SeedOptions): Promise<SeedR
             ids.push(randomUUID());
             titles.push(issueTitle(i));
             statuses.push(ISSUE_STATUSES[i % ISSUE_STATUSES.length] ?? "backlog");
-            priorities.push(i % 5);
+            priorities.push((i * 3 + 1) % 5);
             assignees.push(i % 4 === 0 ? null : (userIds[i % userIds.length] ?? null));
         }
         await client.query(

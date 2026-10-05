@@ -1,5 +1,5 @@
 import { action, computed, makeObservable, observable, runInAction } from "mobx";
-import type { ModelRecord } from "../../shared/domain";
+import type { ModelName, ModelRecord } from "../../shared/domain";
 import type { BootstrapPayload, SyncAction } from "../../shared/protocol";
 import { ObjectPool } from "../models/ObjectPool";
 import type { PendingTransaction, RecordKey } from "./records";
@@ -37,6 +37,7 @@ export class SyncStore {
         makeObservable(this, {
             lastSyncId: observable,
             pendingCount: computed,
+            pendingKeys: computed,
             reset: action,
             addLocal: action,
             applyActions: action,
@@ -47,6 +48,17 @@ export class SyncStore {
 
     get pendingCount(): number {
         return this.pending.length;
+    }
+
+    /** Records with local changes the server has not confirmed yet. */
+    get pendingKeys(): ReadonlySet<RecordKey> {
+        const keys = new Set<RecordKey>();
+        for (const tx of this.pending) for (const op of tx.ops) keys.add(recordKey(op.model, op.id));
+        return keys;
+    }
+
+    isPending(model: ModelName, id: string): boolean {
+        return this.pendingKeys.has(recordKey(model, id));
     }
 
     pendingTransactions(): readonly PendingTransaction[] {

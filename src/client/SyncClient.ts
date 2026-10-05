@@ -53,8 +53,12 @@ export class SyncClient {
     constructor(options: SyncClientOptions) {
         this.options = { reconnectDelayMs: defaultReconnectDelay, onError: (e) => console.error(e), now: () => new Date(), ...options };
         this.persistence = new SerialQueue(this.options.onError);
-        makeObservable<SyncClient, "handleMessage" | "handleClose">(this, {
+        makeObservable<SyncClient, "handleMessage" | "handleClose" | "wantOnline">(this, {
             connection: observable,
+            wantOnline: observable,
+            isOnlineWanted: computed,
+            goOnline: action,
+            goOffline: action,
             lastRejection: observableRef,
             status: computed,
             mutate: action,
