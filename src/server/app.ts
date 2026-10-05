@@ -50,6 +50,7 @@ export async function startServer(config: ServerConfig, logger: Logger = console
     });
 
     const wss = new WebSocketServer({ server: http, path: "/sync", maxPayload: 4 * 1024 * 1024 });
+    wss.on("error", (error) => logger.error("websocket server error", error));
     const alive = new WeakSet<WebSocket>();
     wss.on("connection", (socket) => {
         alive.add(socket);
@@ -79,7 +80,13 @@ export async function startServer(config: ServerConfig, logger: Logger = console
         }
     }, HEARTBEAT_MS);
 
-    await new Promise<void>((resolve) => http.listen(config.port, resolve));
+    await new Promise<void>((resolve, reject) => {
+        http.once("error", reject);
+        http.listen(config.port, () => {
+            http.off("error", reject);
+            resolve();
+        });
+    });
     const { port } = http.address() as AddressInfo;
 
     return {
