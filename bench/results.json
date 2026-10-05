@@ -1,0 +1,66 @@
+{
+  "sync": {
+    "machine": "Intel(R) Xeon(R) Processor @ 2.10GHz x2",
+    "issues": 10000,
+    "bootstrap": {
+      "fetchMedianMs": 449.2,
+      "hydrateMedianMs": 523.4,
+      "payloadKb": 3601
+    },
+    "writes": {
+      "sequentialTxPerSec": 584,
+      "concurrent16TxPerSec": 439
+    },
+    "fanOut": {
+      "samples": 200,
+      "p50Ms": 3,
+      "p95Ms": 8.6,
+      "p99Ms": 13.8
+    },
+    "catchUp": [
+      {
+        "missedActions": 100,
+        "ms": 4,
+        "actionsPerSec": 22272
+      },
+      {
+        "missedActions": 1000,
+        "ms": 33,
+        "actionsPerSec": 30215
+      },
+      {
+        "missedActions": 10000,
+        "ms": 387,
+        "actionsPerSec": 25867
+      }
+    ],
+    "measuredAt": "2026-10-05"
+  },
+  "web": {
+    "issues": 10000,
+    "viewport": "1440x900",
+    "coldLoadMs": 1456,
+    "warmLoadMs": 831,
+    "dom": {
+      "top": {
+        "rows": 33,
+        "nodes": 379
+      },
+      "middle": {
+        "rows": 41,
+        "nodes": 464
+      },
+      "bottom": {
+        "rows": 32,
+        "nodes": 370
+      }
+    },
+    "scroll": {
+      "frames": 199,
+      "p50Ms": 16.7,
+      "p95Ms": 16.8,
+      "maxMs": 116.7
+    },
+    "measuredAt": "2026-10-05"
+  }
+}
