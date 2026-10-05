@@ -146,12 +146,31 @@ export class SyncSession implements SyncSubscriber {
     private sendFresh(actions: readonly SyncAction[]): void {
         if (this.closed) return;
         const fresh = actions.filter((a) => a.syncId > this.cursor);
-        for (let i = 0; i < fresh.length; i += DELTA_CHUNK_SIZE) {
-            this.transport.send({ type: "deltas", actions: fresh.slice(i, i + DELTA_CHUNK_SIZE) });
-        }
+        for (const chunk of chunkByTransaction(fresh, DELTA_CHUNK_SIZE)) this.transport.send({ type: "deltas", actions: chunk });
         const last = fresh.at(-1);
         if (last) this.cursor = last.syncId;
     }
+}
+
+/**
+ * Splits actions into frames of roughly `size`, never separating the actions of one
+ * transaction: a client confirms its own transaction when the first of them arrives, so
+ * they must all arrive together.
+ */
+export function chunkByTransaction(actions: readonly SyncAction[], size: number): SyncAction[][] {
+    const chunks: SyncAction[][] = [];
+    let current: SyncAction[] = [];
+    for (const action of actions) {
+        const previous = current.at(-1);
+        const continuesTransaction = previous !== undefined && action.txId !== null && previous.txId === action.txId;
+        if (current.length >= size && !continuesTransaction) {
+            chunks.push(current);
+            current = [];
+        }
+        current.push(action);
+    }
+    if (current.length) chunks.push(current);
+    return chunks;
 }
 
 function safeJson(raw: string): unknown {
