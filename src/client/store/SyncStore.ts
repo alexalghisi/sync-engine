@@ -15,8 +15,8 @@ export interface ConfirmedDelta {
 }
 
 /**
- * Two layers of state. `confirmed` is exactly what the server has told us, up to
- * `lastSyncId`. `pending` are local transactions it has not confirmed yet. The object
+ * Two layers of state. The confirmed layer is exactly what the server has told us, up to
+ * `lastSyncId`. The pending layer holds local transactions it has not confirmed yet. The object
  * pool the UI reads is always confirmed state with the pending transactions replayed on
  * top, in order.
  *
@@ -96,6 +96,7 @@ export class SyncStore {
     applyActions(actions: readonly SyncAction[]): ConfirmedDelta {
         const touched = new Set<RecordKey>();
         const confirmed = new Set<string>();
+        const pendingIds = new Set(this.pending.map((tx) => tx.id));
 
         for (const syncAction of actions) {
             if (syncAction.syncId <= this.lastSyncId) continue;
@@ -105,7 +106,7 @@ export class SyncStore {
             else this.confirmedState.delete(key);
             touched.add(key);
             this.lastSyncId = syncAction.syncId;
-            if (syncAction.txId && this.hasPending(syncAction.txId)) confirmed.add(syncAction.txId);
+            if (syncAction.txId && pendingIds.has(syncAction.txId)) confirmed.add(syncAction.txId);
         }
         for (const [txId, syncId] of this.acked) if (syncId <= this.lastSyncId) confirmed.add(txId);
 
